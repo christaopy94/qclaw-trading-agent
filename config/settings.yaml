@@ -1,0 +1,80 @@
+# QClaw FinAgent Configuration
+# This file is safe to commit (no secrets here).
+# Sensitive values go in config/.env
+
+system:
+  name: "QClaw FinAgent"
+  version: "0.1.0"
+  description: "Multi-Agent Financial Market Analysis & Review Automation System"
+
+agents:
+  data:
+    enabled: true
+    sources:
+      - akshare
+    max_retries: 3
+    timeout_seconds: 30
+
+  sentiment:
+    enabled: true
+    sources:
+      - financial_news
+      - social_media
+    llm:
+      model: "${LLM_MODEL}"
+      temperature: 0.3
+      max_tokens: 2048
+
+  strategy:
+    enabled: true
+    analysis_focus:
+      - sector_rotation
+      - theme_identification
+      - leader_mapping
+    llm:
+      model: "${LLM_MODEL}"
+      temperature: 0.4
+      max_tokens: 3072
+
+  review:
+    enabled: true
+    refinement_passes: 3
+    output_format: markdown
+    llm:
+      model: "${LLM_MODEL}"
+      temperature: 0.5
+      max_tokens: 4096
+
+  notify:
+    enabled: true
+    channels:
+      - dingtalk
+      - wechat
+      - slack
+    retry_on_failure: true
+    max_retries: 2
+
+workflow:
+  daily_review:
+    trigger_time: "15:30"
+    timezone: "Asia/Shanghai"
+    output_dir: "./output"
+    log_level: "INFO"
+
+market:
+  exchanges:
+    - SSE    # Shanghai
+    - SZSE   # Shenzhen
+  exclude_boards:
+    - ChiNext       # 创业板
+    - STAR          # 科创板
+    - BSE           # 北交所
+  exclude_types:
+    - ST
+    - *ST
+
+output:
+  formats:
+    - markdown
+  directory: "./output"
+  filename_template: "daily_review_{date}.md"
